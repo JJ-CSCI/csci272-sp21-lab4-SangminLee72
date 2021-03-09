@@ -4,13 +4,109 @@
 #include <string>
 #include "catch.hpp"
 using Catch::Matchers::Equals;
+
 //------------------------------
-///0000000
 
 // Fix the following class
 class Complex {
-    void operator>>(std::string&) const;
-    void operator<<(const std::string&);
+  public:
+    Complex() {
+      realNumber_ = 0;
+      imaginaryNumber_ = 0;
+    }
+
+    Complex(int realNumber) {
+      realNumber_ = realNumber;
+      imaginaryNumber_ = 0;
+    }
+
+    Complex(int realNumber, int imaginaryNumber) {
+      realNumber_ = realNumber;
+      imaginaryNumber_ = imaginaryNumber;
+    }
+
+    void operator>>(std::string& rhs) const {
+      std::string realNumberPart = "";
+      if(realNumber_ < 0) {
+        realNumberPart += "-";
+      }
+      realNumberPart += intToChar(absolute(realNumber_));
+
+      std::string imaginaryNumberPart = "";
+      if(imaginaryNumber_ < 0) {
+        imaginaryNumberPart += "-";
+      } else {
+        imaginaryNumberPart += "+";
+      }
+      imaginaryNumberPart += intToChar(absolute(imaginaryNumber_));
+      imaginaryNumberPart += "i";
+
+      rhs = realNumberPart + imaginaryNumberPart;
+    }
+
+    void operator<<(const std::string& rhs) {
+      //-0+0i
+      //"1+1i" -> char 
+      //char -> int 
+      bool isNegativeRealNumber = false;
+      bool isNegativeImaginaryNumber = false;
+      char realNumberChar;
+      char imaginaryNumberChar;
+    
+      if(rhs[0] == '-') {
+        isNegativeRealNumber = true;
+        realNumberChar = rhs[1];
+      } else {
+        realNumberChar = rhs[0];
+      }
+
+      realNumber_ = charToInt(realNumberChar);
+      if(isNegativeRealNumber) {
+        realNumber_ *= -1;
+        imaginaryNumberChar = rhs[3];
+        if(rhs[2] == '-') {
+          isNegativeImaginaryNumber = true;
+        }
+      } else {
+        imaginaryNumberChar = rhs[2];
+        if(rhs[1] == '-') {
+          isNegativeImaginaryNumber = true;
+        }
+      }
+
+      imaginaryNumber_ = charToInt(imaginaryNumberChar);
+      if(isNegativeImaginaryNumber) {
+        imaginaryNumber_ *= -1;
+      }
+    }
+
+    int absolute(int i ) const {
+      if(i < 0) {
+        return i * -1;
+      } else {
+        return i;
+      }
+    }
+
+    char intToChar(int i) const {
+      return (char)(i + 48);
+    }
+
+    int charToInt(char c) const {
+      return (int)(c - 48);
+    }
+
+    int re() {
+      return realNumber_;
+    }
+
+    int im() {
+      return imaginaryNumber_;
+    }
+
+  private:
+    int realNumber_;
+    int imaginaryNumber_;
 };
 
 //------------------------------
